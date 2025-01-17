@@ -48,7 +48,7 @@ function selected_atoms = extract_atom_data(filename)
         error('Недостаточно столбцов в atom_data. Последняя обработанная строка: %s', tline);
     end
     
-    % Извлечение данных для молекул 1 и 3-8
+    % Извлечение ID молекулы, ID атома, заряда и координат (X, Y, Z) для молекул 1 и 3-8
     mol_ids = [1, 3, 4, 5, 6, 7, 8];
-    selected_atoms = atom_data(ismember(atom_data(:, 3), mol_ids), :);
+    selected_atoms = atom_data(ismember(atom_data(:, 2), mol_ids), [2, 1, 4, 5, 6, 7]);
 end
