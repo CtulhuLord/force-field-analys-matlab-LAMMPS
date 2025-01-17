@@ -17,16 +17,36 @@ function selected_atoms = extract_atom_data(filename)
     
     % Чтение данных атомов
     atom_data = [];
+    line_number = 0;
     while true
         tline = fgetl(fid);
-        if ~ischar(tline) || isempty(tline)
+        line_number = line_number + 1;
+        
+        % Прекратить проверку строк при достижении блока Velocities
+        if contains(tline, 'Velocities')
             break;
         end
-        atom_data = [atom_data; sscanf(tline, '%d %d %d %f %f %f %f %d %d %d')'];
+        
+        % Пропустить пустые строки или строки, содержащие только пробелы
+        if ~ischar(tline) || isempty(strtrim(tline))
+            continue;
+        end
+        
+        data = sscanf(tline, '%d %d %d %f %f %f %f %d %d %d')';
+        if length(data) == 10
+            atom_data = [atom_data; data];
+        else
+            fprintf('Строка %d не соответствует ожидаемому формату и будет пропущена: %s\n', line_number, tline);
+        end
     end
     
     % Закрытие файла
     fclose(fid);
+    
+    % Проверка, что в atom_data достаточно столбцов
+    if size(atom_data, 2) < 3
+        error('Недостаточно столбцов в atom_data. Последняя обработанная строка: %s', tline);
+    end
     
     % Извлечение данных для молекул 1 и 3-8
     mol_ids = [1, 3, 4, 5, 6, 7, 8];
