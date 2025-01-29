@@ -20,7 +20,7 @@ function compute_interaction()
         shifted_xy_y = original_y + 13;
 
         % Сохранение данных в массив
-        atom_data_array = [atom_data_array; result(i, 1), result(i, 2), result(i, 3), original_x, original_y, original_z, shifted_x, original_y, original_z, original_x, shifted_y, original_z, shifted_xy_x, shifted_xy_y, original_z];
+        atom_data_array = [atom_data_array; result(i, 1), result(i, 2), result(i, 3), original_x, original_y, original_z, shifted_x, original_y, original_z, original_x, shifted_y, original_z, shifted_[...]
     end
 
     % Сортировка массива по первому столбцу (ID молекулы)
@@ -29,7 +29,7 @@ function compute_interaction()
     % Настраиваемый шаг по координатам
     step = 0.5; % можно изменить на любое значение от 0.01 до 1
 
-    % Инициализация массивов для хранения взаимодействий и координат электрона
+    % Инициализация массива для хранения взаимодействий и координат электрона
     interaction_array = [];
 
     % Общие количество итераций для расчета прогресса
@@ -48,7 +48,7 @@ function compute_interaction()
                 electron_charge = -1; % Заряд электрона в эквивалентных зарядах электрона
 
                 % Инициализация переменной для суммарного значения взаимодействия
-                total_interaction_vector = [0, 0, 0];
+                total_interaction = 0;
 
                 % Перебор массива atom_data_array и вычисление взаимодействий
                 for i = 1:size(atom_data_array, 1)
@@ -60,32 +60,24 @@ function compute_interaction()
                     shifted_xy_coord = atom_data_array(i, 13:15);
 
                     % Вычисление взаимодействий по нормальным координатам
-                    interaction_vector_normal = coulomb_force_vector(electron_charge, atom_charge, electron_coords, normal_coord);
-                    total_interaction_vector = total_interaction_vector + interaction_vector_normal;
+                    interaction_normal = coulomb_force(electron_charge, atom_charge, electron_coords, normal_coord);
+                    total_interaction = total_interaction + interaction_normal;
 
                     % Вычисление взаимодействий по смещенным координатам (X+13)
-                    interaction_vector_shifted_x = coulomb_force_vector(electron_charge, atom_charge, electron_coords, shifted_x_coord);
-                    total_interaction_vector = total_interaction_vector + interaction_vector_shifted_x;
+                    interaction_shifted_x = coulomb_force(electron_charge, atom_charge, electron_coords, shifted_x_coord);
+                    total_interaction = total_interaction + interaction_shifted_x;
 
                     % Вычисление взаимодействий по смещенным координатам (Y+13)
-                    interaction_vector_shifted_y = coulomb_force_vector(electron_charge, atom_charge, electron_coords, shifted_y_coord);
-                    total_interaction_vector = total_interaction_vector + interaction_vector_shifted_y;
+                    interaction_shifted_y = coulomb_force(electron_charge, atom_charge, electron_coords, shifted_y_coord);
+                    total_interaction = total_interaction + interaction_shifted_y;
 
                     % Вычисление взаимодействий по смещенным координатам (X+13, Y+13)
-                    interaction_vector_shifted_xy = coulomb_force_vector(electron_charge, atom_charge, electron_coords, shifted_xy_coord);
-                    total_interaction_vector = total_interaction_vector + interaction_vector_shifted_xy;
+                    interaction_shifted_xy = coulomb_force(electron_charge, atom_charge, electron_coords, shifted_xy_coord);
+                    total_interaction = total_interaction + interaction_shifted_xy;
                 end
 
-                % Вычисление результирующей величины взаимодействия
-                resultant_magnitude = norm(total_interaction_vector);
-
-                % Определение знака результирующей величины
-                if total_interaction_vector(3) < 0
-                    resultant_magnitude = -resultant_magnitude;
-                end
-
-                % Добавление результирующей величины, total_interaction_vector и координат электрона в массив
-                interaction_array = [interaction_array; resultant_magnitude, total_interaction_vector, electron_coords];
+                % Добавление результирующей величины и координат электрона в массив
+                interaction_array = [interaction_array; total_interaction, electron_coords];
 
                 % Обновление шкалы прогресса
                 current_iteration = current_iteration + 1;
