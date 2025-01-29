@@ -1,9 +1,9 @@
 
 % Вызов основной функции
-sub();
+calc();
 
 % Основная функция для вызова вычислений и визуализации
-function sub()
+function calc()
     % Проверка существования файла interaction_array.mat
     if exist('interaction_array.mat', 'file') ~= 2
         % Выполнение вычислений и сохранение массива interaction_array в файл

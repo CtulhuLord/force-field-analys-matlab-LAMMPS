@@ -6,7 +6,7 @@ function visualize_interaction()
     magnitudes = abs(interaction_array(:, 1));
     min_magnitude = min(magnitudes);
     max_magnitude = max(magnitudes);
-    sizes = 1 +  999 * (magnitudes - min_magnitude) / (max_magnitude - min_magnitude);
+    sizes = 1 + 99 * (magnitudes - min_magnitude) / (max_magnitude - min_magnitude);
 
     % Визуализация данных
     figure;
@@ -25,11 +25,11 @@ function visualize_interaction()
     end
 
     % Нанесение точек на график
-    scatter3(interaction_array(:, 5), interaction_array(:, 6), interaction_array(:, 7), sizes, colors);
+    scatter3(interaction_array(:, 2), interaction_array(:, 3), interaction_array(:, 4), sizes, colors, 'filled');
     xlabel('X');
     ylabel('Y');
     zlabel('Z');
-    title('Visualization of Interaction Vectors');
+    title('Visualization of Interaction Magnitudes');
     colorbar;
     hold off;
 
