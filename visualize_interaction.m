@@ -1,4 +1,4 @@
-function visualize_interaction(size_range, fixed_size, threshold)
+function visualize_interaction(size_range, fixed_size, threshold, show_histogram)
     % Определение цветов для экстремально больших значений
     extreme_positive_color = [1, 0, 0]; % Красный для экстремально больших положительных значений
     extreme_negative_color = [0.5, 0, 0.5]; % Тёмно-фиолетовый для экстремально больших отрицательных значений
@@ -83,18 +83,27 @@ function visualize_interaction(size_range, fixed_size, threshold)
     % Создание интерактивного окна для срезов
     slice_fig = figure('Name', 'Slice Visualization');
     slice_ax = axes(slice_fig);
-    h = uicontrol(slice_fig, 'Style', 'slider', 'Min', min(interaction_array(:, 4)), 'Max', max(interaction_array(:, 4)), 'Value', min(interaction_array(:, 4)), 'Position', [400 20 120 20]);
-    addlistener(h, 'Value', 'PostSet', @(src, event) updateSlice(slice_ax, interaction_array, event.AffectedObject.Value, colors));
+    % Начальный размер шага
+    initial_step = 1;
+    h_slider = uicontrol(slice_fig, 'Style', 'slider', 'Min', min(interaction_array(:, 4)), 'Max', max(interaction_array(:, 4)), 'Value', min(interaction_array(:, 4)), 'Position', [400 20 120 20], 'SliderStep', [initial_step/(max(interaction_array(:, 4)) - min(interaction_array(:, 4))), initial_step/(max(interaction_array(:, 4)) - min(interaction_array(:, 4)))*10]);
+    addlistener(h_slider, 'Value', 'PostSet', @(src, event) updateSlice(slice_ax, interaction_array, event.AffectedObject.Value, colors));
+
+    % Текстовое поле для ввода шага
+    h_step_text = uicontrol(slice_fig, 'Style', 'edit', 'String', num2str(initial_step), 'Position', [530 20 50 20]);
+    % Кнопка для применения нового шага
+    h_apply_button = uicontrol(slice_fig, 'Style', 'pushbutton', 'String', 'Apply Step', 'Position', [590 20 80 20], 'Callback', @(src, event) applyStep(h_slider, h_step_text, interaction_array));
 
     % Первоначальный вызов функции для отображения начального среза
     updateSlice(slice_ax, interaction_array, min(interaction_array(:, 4)), colors);
 
-    % Создание окна для гистограммы
-    figure('Name', 'Histogram of Interaction Values');
-    histogram(interaction_array(:, 1));
-    xlabel('Interaction Values');
-    ylabel('Frequency');
-    title('Histogram of Interaction Values');
+    % Создание окна для гистограммы, если включено show_histogram
+    if show_histogram
+        figure('Name', 'Histogram of Interaction Values');
+        histogram(interaction_array(:, 1));
+        xlabel('Interaction Values');
+        ylabel('Frequency');
+        title('Histogram of Interaction Values');
+    end
 
     % Вывод результата
     fprintf('Визуализация завершена.\n');
@@ -121,5 +130,15 @@ function updateSlice(slice_ax, interaction_array, slice_value, colors)
         title(slice_ax, sprintf('Slice Visualization at Z = %.2f', slice_value));
         colorbar;
         hold off;
+    end
+end
+
+function applyStep(h_slider, h_step_text, interaction_array)
+    % Функция для применения нового шага слайдера
+    new_step = str2double(get(h_step_text, 'String'));
+    if ~isnan(new_step) && new_step > 0
+        set(h_slider, 'SliderStep', [new_step/(max(interaction_array(:, 4)) - min(interaction_array(:, 4))), new_step/(max(interaction_array(:, 4)) - min(interaction_array(:, 4)))*10]);
+    else
+        errordlg('Введите корректное значение шага (положительное число).', 'Ошибка');
     end
 end

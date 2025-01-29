@@ -1,11 +1,14 @@
 % Ввод значения step
 step = input('Введите значение step: ');
 
-% Вызов основной функции с переданным значением step
-sub(step);
+% Ввод параметра для визуализации гистограммы
+show_histogram = input('Хотите ли вы визуализировать гистограмму? (введите "д" или "н"): ', 's');
+
+% Вызов основной функции с переданным значением step и параметром визуализации
+sub(step, show_histogram);
 
 % Основная функция для вызова вычислений и визуализации
-function sub(step)
+function sub(step, show_histogram)
     % Проверка существования файла interaction_array.mat
     if exist('interaction_array.mat', 'file') == 2
         % Загрузка сохраненного значения step из файла interaction_array.mat
@@ -28,6 +31,6 @@ function sub(step)
     fixed_size = []; % Оставить пустым для использования диапазона размеров точек
     threshold = 3; % Пороговое значение для определения экстремально больших значений
     
-    % Вызов функции визуализации с настройками
-    visualize_interaction(size_range, fixed_size, threshold);
+    % Вызов функции визуализации с настройками, включая параметр для гистограммы
+    visualize_interaction(size_range, fixed_size, threshold, strcmpi(show_histogram, 'д'));
 end
