@@ -1,4 +1,4 @@
-function compute_interaction(step)
+function compute_interaction()
     % Вызов функции для извлечения данных атомов из файла
     result = extract_atom_data('system.data');
 
@@ -26,6 +26,9 @@ function compute_interaction(step)
     % Сортировка массива по первому столбцу (ID молекулы)
     atom_data_array = sortrows(atom_data_array, 1);
 
+    % Настраиваемый шаг по координатам
+    step = 0.5; % можно изменить на любое значение от 0.01 до 1
+
     % Инициализация массива для хранения взаимодействий и координат электрона
     interaction_array = [];
 
@@ -44,8 +47,8 @@ function compute_interaction(step)
                 electron_coords = [x, y, z];
                 electron_charge = -1; % Заряд электрона в эквивалентных зарядах электрона
 
-                % Инициализация переменной для суммарного значения энергии
-                total_energy = 0;
+                % Инициализация переменной для суммарного значения взаимодействия
+                total_interaction = 0;
 
                 % Перебор массива atom_data_array и вычисление взаимодействий
                 for i = 1:size(atom_data_array, 1)
@@ -56,25 +59,25 @@ function compute_interaction(step)
                     shifted_y_coord = atom_data_array(i, 10:12);
                     shifted_xy_coord = atom_data_array(i, 13:15);
 
-                    % Вычисление энергии по нормальным координатам
-                    energy_normal = coulomb_force(electron_charge, atom_charge, electron_coords, normal_coord);
-                    total_energy = total_energy + energy_normal;
+                    % Вычисление взаимодействий по нормальным координатам
+                    interaction_normal = coulomb_force(electron_charge, atom_charge, electron_coords, normal_coord);
+                    total_interaction = total_interaction + interaction_normal;
 
-                    % Вычисление энергии по смещенным координатам (X+13)
-                    energy_shifted_x = coulomb_force(electron_charge, atom_charge, electron_coords, shifted_x_coord);
-                    total_energy = total_energy + energy_shifted_x;
+                    % Вычисление взаимодействий по смещенным координатам (X+13)
+                    interaction_shifted_x = coulomb_force(electron_charge, atom_charge, electron_coords, shifted_x_coord);
+                    total_interaction = total_interaction + interaction_shifted_x;
 
-                    % Вычисление энергии по смещенным координатам (Y+13)
-                    energy_shifted_y = coulomb_force(electron_charge, atom_charge, electron_coords, shifted_y_coord);
-                    total_energy = total_energy + energy_shifted_y;
+                    % Вычисление взаимодействий по смещенным координатам (Y+13)
+                    interaction_shifted_y = coulomb_force(electron_charge, atom_charge, electron_coords, shifted_y_coord);
+                    total_interaction = total_interaction + interaction_shifted_y;
 
-                    % Вычисление энергии по смещенным координатам (X+13, Y+13)
-                    energy_shifted_xy = coulomb_force(electron_charge, atom_charge, electron_coords, shifted_xy_coord);
-                    total_energy = total_energy + energy_shifted_xy;
+                    % Вычисление взаимодействий по смещенным координатам (X+13, Y+13)
+                    interaction_shifted_xy = coulomb_force(electron_charge, atom_charge, electron_coords, shifted_xy_coord);
+                    total_interaction = total_interaction + interaction_shifted_xy;
                 end
 
-                % Добавление результирующей величины энергии и координат электрона в массив
-                interaction_array = [interaction_array; total_energy, electron_coords];
+                % Добавление результирующей величины и координат электрона в массив
+                interaction_array = [interaction_array; total_interaction, electron_coords];
 
                 % Обновление шкалы прогресса
                 current_iteration = current_iteration + 1;
@@ -86,8 +89,8 @@ function compute_interaction(step)
     % Закрытие шкалы прогресса
     close(h);
 
-    % Сохранение массива interaction_array и значения step в файл
-    save('interaction_array.mat', 'interaction_array', 'step');
+    % Сохранение массива interaction_array в файл
+    save('interaction_array.mat', 'interaction_array');
 
     % Вывод результата
     fprintf('Вычисление взаимодействий завершено и данные сохранены в файл.\n');
