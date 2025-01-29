@@ -20,7 +20,7 @@ function compute_interaction()
         shifted_xy_y = original_y + 13;
 
         % Сохранение данных в массив
-        atom_data_array = [atom_data_array; result(i, 1), result(i, 2), result(i, 3), original_x, original_y, original_z, shifted_x, original_y, original_z, original_x, shifted_y, original_z, shifted_[...]
+        atom_data_array = [atom_data_array; result(i, 1), result(i, 2), result(i, 3), original_x, original_y, original_z, shifted_x, original_y, original_z, original_x, shifted_y, original_z, shifted_xy_x, shifted_xy_y, original_z];
     end
 
     % Сортировка массива по первому столбцу (ID молекулы)
